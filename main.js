@@ -7,6 +7,6 @@ ipcMain.handle('cfg:set',(e,v)=>{const c=rd();const n={base:String(v.base||c.bas
 ipcMain.handle('ai',async(e,prompt)=>{const c=rd();if(!c.key)throw new Error('NOKEY');const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),20000);
 try{const r=await fetch(c.base+'/chat/completions',{method:'POST',signal:ctl.signal,headers:{'Content-Type':'application/json',Authorization:'Bearer '+c.key},body:JSON.stringify({model:c.model,messages:[{role:'user',content:String(prompt).slice(0,8000)}]})});
 if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();return j.choices[0].message.content}finally{clearTimeout(t)}});
-app.whenReady().then(()=>{Menu.setApplicationMenu(null);const w=new BrowserWindow({width:1280,height:800,backgroundColor:'#101215',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,nodeIntegration:false}});w.loadFile('game/index.html');
+app.whenReady().then(()=>{Menu.setApplicationMenu(null);const w=new BrowserWindow({width:1280,height:800,backgroundColor:'#101215',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,nodeIntegration:false,webviewTag:true}});w.loadFile('game/index.html');
 w.webContents.on('before-input-event',(e,i)=>{if(i.type==='keyDown'&&i.key==='F11')w.setFullScreen(!w.isFullScreen())})});
 app.on('window-all-closed',()=>app.quit());

@@ -12,4 +12,6 @@ Your key is saved only on that PC, in the app data folder. Each friend should us
 ## Sounds
 Built-in sounds work out of the box. To use Pixabay sounds, put mp3 files in game/sfx (see README.txt there) and rebuild.
 ## Controls
-WASD move, E talk, Up arrow phone, Esc close, F11 fullscreen. Voice input may not work in the desktop app; type instead.
+WASD move, E enter buildings/use counters/talk/steal a nearby car, F leave a car, Tab open quick gear, 1-3 select gear, Space use gear, Up arrow open the phone, Esc close, F11 fullscreen. Walk through Dusty Creek to reach the expanded north district. Police can hear suspicious conversations nearby; wanted heat cools off when you get away.
+
+The phone includes messages, contacts, an embedded web browser, town map, missions, inventory, camera, radio, and settings. Buildings have walk-in interiors; use E at the counter for available services. The quick gear is cartoon foam, water balloons, and signal flares.
