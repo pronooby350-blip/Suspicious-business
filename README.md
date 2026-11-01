@@ -2,16 +2,13 @@
 ## Get the .exe (no installs needed)
 1. Create a free GitHub account and a new repository.
 2. Upload every file in this folder (keep the .github folder).
-3. Open the repo's Actions tab. The "Build Windows exe" run starts by itself (or press Run workflow).
-4. When it turns green, open it and download the SuspiciousBusiness-Windows artifact. Inside is the setup .exe and a portable .exe.
+3. Open the repo's Actions tab. "Build Windows exe" starts by itself (or press Run workflow).
+4. When it turns green, download the SuspiciousBusiness-Windows artifact (setup .exe and portable .exe).
 ## Or run it on your PC
-Install Node.js, then run: npm install  then  npm start  (npm run dist builds the exe).
-## Add the AI
-Main menu > Settings. Paste a free Gemini key from aistudio.google.com, and set the exact Model ID your account lists. Keep the default base URL for Gemini. Any OpenAI-compatible service also works.
-Your key is saved only on that PC, in the app data folder. Each friend should use their own key. Never put a key in the code.
-## Sounds
-Built-in sounds work out of the box. To use Pixabay sounds, put mp3 files in game/sfx (see README.txt there) and rebuild.
+Install Node.js, then: npm install, then npm start (npm run dist builds the exe).
+## Add the AI (optional)
+Main menu > AI Settings. Paste a free Gemini key from aistudio.google.com and set the Model ID. Without a key, NPCs use built-in replies.
 ## Controls
-WASD move, E enter buildings/use counters/talk/steal a nearby car, F leave a car, Tab open quick gear, 1-3 select gear, Space use gear, Up arrow open the phone, Esc close, F11 fullscreen. Walk through Dusty Creek to reach the expanded north district. Police can hear suspicious conversations nearby; wanted heat cools off when you get away.
-
-The phone includes messages, contacts, an embedded web browser, town map, missions, inventory, camera, radio, and settings. Buildings have walk-in interiors; use E at the counter for available services. The quick gear is cartoon foam, water balloons, and signal flares.
+WASD move, Shift run, E talk/enter buildings/use things, F get in/out of cars (on a driven car: carjack), hold TAB weapon wheel (or 1-5), mouse click or Space attack, H horn, Space handbrake in cars, Up arrow phone, Esc close, F11 fullscreen.
+## What's new
+Bigger town, every building enterable, weapons, stealable cars, scrapyard, wanted stars with police cars and foot cops, police overhearing (the ear icon shows who can hear you), and a smartphone with 15 apps including a real web browser (desktop app only).

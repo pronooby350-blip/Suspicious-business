@@ -1,4 +1,4 @@
-const {app,BrowserWindow,ipcMain,Menu}=require('electron');const path=require('path'),fs=require('fs');
+const {app,BrowserWindow,ipcMain,Menu,session}=require('electron');const path=require('path'),fs=require('fs');
 const cf=()=>path.join(app.getPath('userData'),'ai.json');
 const def={base:'https://generativelanguage.googleapis.com/v1beta/openai',model:'gemini-3.1-flash-lite',key:''};
 const rd=()=>{try{return{...def,...JSON.parse(fs.readFileSync(cf(),'utf8'))}}catch(e){return{...def}}};
@@ -7,6 +7,9 @@ ipcMain.handle('cfg:set',(e,v)=>{const c=rd();const n={base:String(v.base||c.bas
 ipcMain.handle('ai',async(e,prompt)=>{const c=rd();if(!c.key)throw new Error('NOKEY');const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),20000);
 try{const r=await fetch(c.base+'/chat/completions',{method:'POST',signal:ctl.signal,headers:{'Content-Type':'application/json',Authorization:'Bearer '+c.key},body:JSON.stringify({model:c.model,messages:[{role:'user',content:String(prompt).slice(0,8000)}]})});
 if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();return j.choices[0].message.content}finally{clearTimeout(t)}});
-app.whenReady().then(()=>{Menu.setApplicationMenu(null);const w=new BrowserWindow({width:1280,height:800,backgroundColor:'#101215',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,nodeIntegration:false,webviewTag:true}});w.loadFile('game/index.html');
+app.whenReady().then(()=>{Menu.setApplicationMenu(null);const w=new BrowserWindow({width:1280,height:800,backgroundColor:'#101215',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,nodeIntegration:false,webviewTag:true}});
+w.webContents.on('will-attach-webview',(e,wp,params)=>{delete wp.preload;wp.nodeIntegration=false;wp.contextIsolation=true;wp.sandbox=true;if(!/^https?:/i.test(params.src||'https://x'))e.preventDefault()});
+session.fromPartition('persist:phone').setPermissionRequestHandler((wc,perm,cb)=>cb(false));w.loadFile('game/index.html');
 w.webContents.on('before-input-event',(e,i)=>{if(i.type==='keyDown'&&i.key==='F11')w.setFullScreen(!w.isFullScreen())})});
+app.on('web-contents-created',(e,wc)=>{if(wc.getType()==='webview'){wc.setWindowOpenHandler(({url})=>{if(/^https?:/i.test(url))wc.loadURL(url);return{action:'deny'}});wc.on('will-navigate',(ev,u)=>{if(!/^(https?:|about:blank)/i.test(u))ev.preventDefault()})}});
 app.on('window-all-closed',()=>app.quit());
