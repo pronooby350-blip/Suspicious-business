@@ -1,6 +1,6 @@
 const {app,BrowserWindow,ipcMain,Menu}=require('electron');const path=require('path'),fs=require('fs');
 const cf=()=>path.join(app.getPath('userData'),'ai.json');
-const def={base:'https://generativelanguage.googleapis.com/v1beta/openai',model:'gemini-2.5-flash',key:''};
+const def={base:'https://generativelanguage.googleapis.com/v1beta/openai',model:'gemini-3.1-flash-lite',key:''};
 const rd=()=>{try{return{...def,...JSON.parse(fs.readFileSync(cf(),'utf8'))}}catch(e){return{...def}}};
 ipcMain.handle('cfg:get',()=>{const c=rd();return{base:c.base,model:c.model,hasKey:!!c.key}});
 ipcMain.handle('cfg:set',(e,v)=>{const c=rd();const n={base:String(v.base||c.base).replace(/\/+$/,''),model:String(v.model||c.model),key:v.key?String(v.key).trim():c.key};fs.writeFileSync(cf(),JSON.stringify(n));return true});
