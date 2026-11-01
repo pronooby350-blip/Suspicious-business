@@ -33,17 +33,21 @@ button:hover{background:#363c48;transform:translateY(-2px)}button:active{transfo
 #menu h1{margin:0;font-size:clamp(24px,5vw,48px);letter-spacing:3px;color:var(--a);text-shadow:0 4px 0 #6b4a00}
 #menu p{margin:0 0 14px;color:var(--m)}#menu button{width:210px}
 #tt{position:absolute;top:60px;left:50%;transform:translate(-50%,-30px);padding:8px 14px;opacity:0;transition:.4s var(--sp);z-index:6}#tt.on{transform:translate(-50%,0);opacity:1}
+#ob{position:absolute;left:10px;top:56px;max-width:62%;padding:6px 12px;font-weight:600;color:var(--a);transition:color .3s}
+#shop,#cr{left:20%;right:20%;top:20%;padding:16px;gap:8px;transform:scale(.9);z-index:6}
+#mgb{position:relative;height:26px;border-radius:13px;background:#0007;border:1px solid var(--ln);overflow:hidden}
+#mgz{position:absolute;top:0;bottom:0;background:#5bc47a88}#mgm{position:absolute;top:2px;bottom:2px;width:8px;border-radius:5px;background:var(--a)}
 </style></head><body><div id="st"><canvas id="cv" width="800" height="500"></canvas>
 <div id="hud" class="pan"><span id="mo">$100</span><span id="tm">8:00</span><span style="display:flex;gap:6px;align-items:center">Suspicion<div id="bar"><div id="bf"></div></div></span></div>
-<div id="loc" class="pan">Dusty Creek</div><div id="pr" class="pan"></div>
-<div id="dlg" class="ov pan"><div id="dh"><div id="av"></div><b id="nm"></b><span id="pill">idle</span></div><div id="log"></div><div class="row"><button id="mc" title="Microphone">Mic</button><input id="in" placeholder="Say something..." maxlength="200"><button id="sd" class="p">Send</button><button id="cl">Leave</button></div></div>
-<div id="ph" class="ov pan"><h4>PHONE</h4><b id="ps"></b><button id="cv1">Call Vinny (friend in crime)</button><button id="ph2">Close</button></div>
+<div id="ob" class="pan"></div><div id="loc" class="pan">Dusty Creek</div><div id="pr" class="pan"></div>
+<div id="dlg" class="ov pan"><div id="dh"><div id="av"></div><b id="nm"></b><span id="pill">idle</span></div><div id="log"></div><div class="row"><button id="mc" title="Microphone">Mic</button><input id="in" placeholder="Say something..." maxlength="200"><button id="sd" class="p">Send</button><button id="gv" class="p" style="display:none">Give</button><button id="cl">Leave</button></div></div>
+<div id="ph" class="ov pan"><h4>PHONE</h4><b id="ps"></b><div id="pm" style="color:var(--a);font-weight:600"></div><div id="pi" style="color:var(--m);font-size:12px"></div><div id="pv" style="color:var(--m);font-size:12px"></div><button id="pa" class="p">Answer Boss</button><button id="cb">Call Boss</button><button id="cv1">Call Vinny</button><button id="ph2">Close</button></div>
 <div id="menu" class="ov on"><h1>SUSPICIOUS BUSINESS</h1><p>Dusty Creek needs a business. Nobody should ask questions.</p><button id="ct" class="p">Continue</button><button id="ng">New Game</button><button id="rm">Reset NPC memories</button><button id="sbtn">Settings</button><button id="vtog">Voice: On</button><p style="margin-top:10px;font-size:12px">WASD move · E talk · ↑ phone · Esc close</p></div>
-<div id="set" class="ov pan" style="left:18%;right:18%;top:18%;padding:16px;gap:8px;transform:scale(.9);z-index:7"><b>AI Settings</b><input id="sb_url" placeholder="API base URL"><input id="sb_model" placeholder="Model ID"><input id="sb_key" type="password" placeholder="API key (stored on this PC only)"><div class="row"><button id="sb_save" class="p">Save</button><button id="sb_x">Close</button></div></div><div id="tt" class="pan"></div></div>
+<div id="set" class="ov pan" style="left:18%;right:18%;top:18%;padding:16px;gap:8px;transform:scale(.9);z-index:7"><b>AI Settings</b><input id="sb_url" placeholder="API base URL"><input id="sb_model" placeholder="Model ID"><input id="sb_key" type="password" placeholder="API key (stored on this PC only)"><div class="row"><button id="sb_save" class="p">Save</button><button id="sb_x">Close</button></div></div><div id="shop" class="ov pan"></div><div id="cr" class="ov pan"><b>Workshop: Blue Candy</b><div id="crt" style="color:var(--m)">Needs 1 Sugar, 1 Blue Dye and 1 Jar per batch.</div><div id="mgb"><div id="mgz"></div><div id="mgm"></div></div><div class="row"><button id="mgs" class="p">Start batch</button><button id="mgx">Stir! (Space)</button><button id="mgc">Close</button></div></div><div id="tt" class="pan"></div></div>
 <script>
 const $=s=>document.querySelector(s),cl=(v,a,b)=>Math.max(a,Math.min(b,v));
 const g=$('#cv').getContext('2d');g.imageSmoothingEnabled=false;
-const B=[[40,40,150,100,'#7a4e3a','Apartment'],[230,40,150,100,'#4a5d73','Workshop'],[420,40,150,100,'#8a6a2f','Hardware Store'],[610,40,150,100,'#3b5f8a','Police Office'],[40,340,170,110,'#6b4a6e','Convenience Store'],[600,340,160,110,'#4f7a5a','Restaurant']];
+const B=[[40,40,150,100,'#7a4e3a','Apartment'],[230,40,150,100,'#4a5d73','Workshop'],[420,40,150,100,'#8a6a2f','Hardware Store'],[610,40,150,100,'#3b5f8a','Police Office'],[40,340,170,110,'#6b4a6e','Supermarket'],[600,340,160,110,'#4f7a5a','Restaurant']];
 const NP=[
 {id:'dave',n:'Dave',c:'#c98b5a',hx:300,hy:170,p:'Middle-aged American man. Tired, sarcastic, nosy, awkward small talk. Gets annoyed if the player acts strangely.'},
 {id:'bob',n:'Bob',c:'#8d8d8d',hx:400,hy:300,p:'Older raspy man. Slow, weird, overconfident. Shares bizarre theories and pointless observations.'},
@@ -51,7 +55,7 @@ const NP=[
 {id:'miller',n:'Officer Miller',c:'#2f4f8f',hx:685,hy:170,p:'Police officer. Professional, slightly sarcastic, very observant, reacts to suspicious behavior.'}];
 const VIN={id:'vinny',n:'Vinny',c:'#a33',p:'The player’s old friend and partner in crime, on the phone. Loud, loyal, scheming, jokes a lot. Can offer a harmless comedy side job (return true in "job") but only occasionally.'};
 NP.forEach(n=>{n.x=n.hx;n.y=n.hy;n.tx=n.hx;n.ty=n.hy;n.f=1});
-const def=()=>({money:100,sus:5,min:480,mem:{},rel:{},x:115,y:170});
+const def=()=>({money:100,sus:5,min:480,mem:{},rel:{},x:115,y:170,inv:{sugar:0,dye:0,jar:0,crystals:0},mi:0,oi:0,rg:0,rgt:4,stars:0,gv:''});
 let S=null,keys={},cur=null,hist=[],busy=false,ac=null,sample=null,last=0,jobT=-99,run=false,tw=null;
 if(window.sb)sample=async(p,o)=>({text:await sb.ask(p)});
 const load=()=>{try{return JSON.parse(localStorage.getItem('sb1'))}catch(e){return null}};
@@ -78,9 +82,9 @@ c.fillStyle='#5a3f26';c.fillRect(370,310,60,10)})();
 function person(x,y,c,f,st,hair){g.fillStyle='#0005';g.fillRect(x-6,y+6,12,4);const w=st?Math.sin(st*.35)*2:0;g.fillStyle='#222';g.fillRect(x-4,y+2,3,5+w);g.fillRect(x+1,y+2,3,5-w);g.fillStyle=c;g.fillRect(x-5,y-6,10,9);g.fillStyle='#e0b48f';g.fillRect(x-4,y-13,8,7);g.fillStyle=hair||'#3a2a1a';g.fillRect(x-4,y-14,8,3);g.fillStyle='#000';g.fillRect(x+(f>0?1:-3),y-10,2,2)}
 let fr=0;
 function frame(t){requestAnimationFrame(frame);const dt=Math.min(.05,(t-last)/1000||0);last=t;if(!S)return;fr++;
-let mv=0;if(run&&!cur){let dx=(keys.d?1:0)-(keys.a?1:0),dy=(keys.s?1:0)-(keys.w?1:0);if(dx||dy){const l=Math.hypot(dx,dy),sp=95*dt;const nx=S.x+dx/l*sp,ny=S.y+dy/l*sp;if(!hit(nx,S.y))S.x=nx;if(!hit(S.x,ny))S.y=ny;mv=fr;if(dx)S.f=dx;if(fr%16===0)sfx('step')}}
-if(run)S.min+=dt*2;
-NP.forEach(n=>{if(cur&&cur.id===n.id){n.f=S.x>n.x?1:-1;return}if(Math.random()<.004){n.tx=n.hx+(Math.random()-.5)*60;n.ty=n.hy+(Math.random()-.5)*30}const d=Math.hypot(n.tx-n.x,n.ty-n.y);n.m=0;if(d>2){const nx=n.x+(n.tx-n.x)/d*28*dt,ny=n.y+(n.ty-n.y)/d*28*dt;if(!hit(nx,ny)){n.x=nx;n.y=ny;n.m=fr}n.f=n.tx>n.x?1:-1}});
+let mv=0;if(run&&!cur&&!UI){let dx=(keys.d?1:0)-(keys.a?1:0),dy=(keys.s?1:0)-(keys.w?1:0);if(dx||dy){const l=Math.hypot(dx,dy),sp=95*dt;const nx=S.x+dx/l*sp,ny=S.y+dy/l*sp;if(!hit(nx,S.y))S.x=nx;if(!hit(S.x,ny))S.y=ny;mv=fr;if(dx)S.f=dx;if(fr%16===0)sfx('step')}}
+if(run){S.min+=dt*2;tick(dt)}
+NP.forEach(n=>{if(n.ch){const d=Math.hypot(S.x-n.x,S.y-n.y)||1,nx=n.x+(S.x-n.x)/d*72*dt,ny=n.y+(S.y-n.y)/d*72*dt;if(!hit(nx,n.y))n.x=nx;if(!hit(n.x,ny))n.y=ny;n.m=fr;n.f=S.x>n.x?1:-1;if(d<14)arrest();else if(d>230){n.ct=(n.ct||0)+dt;if(n.ct>3)lose()}else n.ct=0;return}if(cur&&cur.id===n.id){n.f=S.x>n.x?1:-1;return}if(Math.random()<.004){n.tx=n.hx+(Math.random()-.5)*60;n.ty=n.hy+(Math.random()-.5)*30}const d=Math.hypot(n.tx-n.x,n.ty-n.y);n.m=0;if(d>2){const nx=n.x+(n.tx-n.x)/d*28*dt,ny=n.y+(n.ty-n.y)/d*28*dt;if(!hit(nx,ny)){n.x=nx;n.y=ny;n.m=fr}n.f=n.tx>n.x?1:-1}});
 const near=NP.filter(n=>Math.hypot(n.x-S.x,n.y-S.y)<42).sort((a,b)=>Math.hypot(a.x-S.x,a.y-S.y)-Math.hypot(b.x-S.x,b.y-S.y))[0];
 const mil=NP[3],dm=Math.hypot(mil.x-S.x,mil.y-S.y);
 if(run){S.sus=cl(S.sus+(dm<90&&S.sus>35?.9:-.25)*dt,0,100);if(S.sus>70&&!S.w){S.w=1;sfx('warn')}if(S.sus<60)S.w=0;if(S.sus>=100){sfx('alarm');S.sus=40;S.money=Math.max(0,S.money-50);toast('Busted! Miller fined you $50.')}}
@@ -88,7 +92,7 @@ g.drawImage(bgc,0,0);
 const ent=[{y:S.y,d:()=>person(S.x,S.y,'#d9a441',S.f||1,mv,'#222')},...NP.map(n=>({y:n.y,d:()=>{person(n.x,n.y,n.c,n.f,n.m);g.fillStyle='#fffc';g.font='9px monospace';g.textAlign='center';g.fillText(n.n,n.x,n.y-18)}}))].sort((a,b)=>a.y-b.y);ent.forEach(e=>e.d());
 const h=S.min/60%24;const nt=h>=19||h<6?.45:h>=17?.2:0;if(nt){g.fillStyle=`rgba(10,15,45,${nt})`;g.fillRect(0,0,800,500)}
 const lamp=B.map(b=>[b[0]+b[2]/2,b[1]+b[3]]);if(nt)lamp.forEach(l=>{g.fillStyle='rgba(255,220,120,.12)';g.beginPath();g.arc(l[0],l[1],34+Math.sin(fr/20)*2,0,7);g.fill()});
-const p=$('#pr');if(near&&!cur){p.textContent='E · Talk to '+near.n;p.classList.add('on');S.near=near}else{p.classList.remove('on');S.near=null}
+const p=$('#pr');S.dr=(cur||UI)?null:[1,4].find(i=>nd(i));if(near&&!cur&&!UI){p.textContent='E · Talk to '+near.n;p.classList.add('on');S.near=near}else if(S.dr){p.textContent='E · '+(S.dr===1?'Workshop: cook candy':'Enter Supermarket');p.classList.add('on');S.near=null}else{p.classList.remove('on');S.near=null}
 $('#mo').textContent='$'+S.money;$('#tm').textContent=(h|0)+':'+String(S.min%60|0).padStart(2,'0');
 $('#bf').style.width=S.sus+'%';$('#bf').style.background=S.sus>70?'var(--r)':S.sus>40?'var(--a)':'var(--g)';
 const lb=B.find(b=>Math.abs(S.x-(b[0]+b[2]/2))<b[2]/2+25&&S.y>b[1]&&S.y<b[1]+b[3]+60);$('#loc').textContent=lb?lb[5]:'Dusty Creek';$('#ps').textContent='$'+S.money+' · Suspicion '+(S.sus|0)+'%'}
@@ -97,7 +101,7 @@ requestAnimationFrame(frame);
 const st=s=>{const p=$('#pill');p.className=s;p.textContent=s==='idle'?'ready':s}
 function add(w,t,cls){const d=document.createElement('div');d.className=cls||'';const b=document.createElement('b');b.textContent=w+': ';const s=document.createElement('span');s.textContent=t;d.append(b,s);$('#log').append(d);$('#log').scrollTop=1e5;return s}
 function open(n){sfx('open');cur=n;hist=[];$('#log').innerHTML='';$('#nm').textContent=n.n;$('#av').style.background=n.c;$('#dlg').classList.add('on');$('#ph').classList.remove('on');$('#ph').style.transform='';st('idle');setTimeout(()=>$('#in').focus(),300);
-const m=(S.mem[n.id]||[]).length;add(n.n,n.id==='vinny'?'Yo. What’s the plan?':(m?'Oh. You again.':'Can I help you?'),'n')}
+const m=(S.mem[n.id]||[]).length;if(!n.sc)add(n.n,n.id==='boss'?'Talk. Make it quick.':n.id==='vinny'?'Yo. What’s the plan?':(m?'Oh. You again.':'Can I help you?'),'n')}
 function close(){if(ac)ac.abort();try{speechSynthesis.cancel()}catch(e){}if(cur)sfx('close');clearInterval(tw);cur=null;busy=false;$('#dlg').classList.remove('on');$('#in').blur()}
 function typeIt(el,t){return new Promise(r=>{let i=0;st('speaking');clearInterval(tw);tw=setInterval(()=>{el.textContent=t.slice(0,++i);$('#log').scrollTop=1e5;if(i>=t.length){clearInterval(tw);r()}},18)})}
 async function ask(n,text){
@@ -112,24 +116,24 @@ Reply ONLY with JSON: {"say":"your spoken line","mood":"calm|annoyed|amused|susp
 const r=await sample(pr,{signal:ac.signal,cache:false,modelTier:'quick'});
 const m=(r.text||'').match(/\{[\s\S]*\}/);try{return JSON.parse(m[0])}catch(e){return{say:(r.text||'...').slice(0,200),sus:0,rel:0,memo:''}}}
 async function send(){const i=$('#in'),t=i.value.trim();if(!t||busy||!cur)return;i.value='';add('You',t,'y');hist.push({w:'Player',t});sfx('send');try{speechSynthesis.cancel()}catch(e){}busy=true;st('thinking');const n=cur;
-try{const r=await ask(n,t);if(cur!==n)return;
+if(BAD.test(t)&&bad(n))return;try{const r=await ask(n,t);if(cur!==n)return;
 S.sus=cl(S.sus+cl(+r.sus||0,-5,10),0,100);S.rel[n.id]=cl((S.rel[n.id]||0)+cl(+r.rel||0,-1,1),-5,5);
 if(r.memo){const a=S.mem[n.id]=S.mem[n.id]||[];a.push(String(r.memo).slice(0,120));if(a.length>8)a.shift()}
 if(n.id==='vinny'&&r.job===true&&S.min-jobT>120){jobT=S.min;S.money+=40;S.sus=cl(S.sus+6,0,100);sfx('money');toast('Side job done: +$40, suspicion up')}
 const line=String(r.say||'...').slice(0,300);hist.push({w:n.n,t:line});speak(n,line);sfx('recv');await typeIt(add(n.n,'','n'),line);save()}
 catch(e){if(e&&e.name!=='AbortError'&&cur===n){add(n.n,String(e.message).includes('NOKEY')?'(No API key yet. Open Settings from the menu.)':'(Connection failed. Check your key and model in Settings.)','n')}}
 busy=false;if(cur)st('idle')}
-$('#sd').onclick=send;$('#in').onkeydown=e=>{if(e.key==='Enter')send();e.stopPropagation()};$('#cl').onclick=close;
+$('#sd').onclick=send;$('#in').onkeydown=e=>{if(MG&&e.key===' '){e.preventDefault();stir();return}if(e.key==='Enter')send();e.stopPropagation()};$('#cl').onclick=close;
 $('#mc').onclick=()=>{const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return toast('Mic not supported here, type instead.');const r=new R();r.lang='en-US';st('listening');r.onresult=e=>{$('#in').value=e.results[0][0].transcript;send()};r.onerror=()=>{st('idle');toast('Mic blocked, type instead.')};r.onend=()=>{if(!busy)st('idle')};try{r.start()}catch(e){st('idle')}};
 // phone + keys
 const phone=()=>{if(cur||!run)return;sfx('phone');const p=$('#ph');p.classList.toggle('on');p.style.transform=''};
 $('#cv1').onclick=()=>open(VIN);$('#ph2').onclick=()=>$('#ph').classList.remove('on');
 onkeydown=e=>{if(document.activeElement.tagName==='INPUT')return;const k=e.key.toLowerCase();if(k==='arrowup'){e.preventDefault();phone();return}
-if(k==='escape'){close();$('#ph').classList.remove('on');return}
-if(k==='e'&&run&&!cur&&S.near)open(S.near);if('wasd'.includes(k)&&k.length===1)keys[k]=1};
+if(k==='escape'){closeUI();close();$('#ph').classList.remove('on');return}
+if(k==='e'&&run&&!cur&&!UI){if(S.near)open(S.near);else if(S.dr===4)openShop();else if(S.dr===1)openCraft()}if('wasd'.includes(k)&&k.length===1)keys[k]=1};
 onkeyup=e=>{delete keys[e.key.toLowerCase()]};
 // menu
-function start(s){S=s;run=true;$('#menu').classList.remove('on');$('#menu').style.transform='scale(1.1)';toast('Welcome to Dusty Creek. Stay calm.')}
+function start(s){S=Object.assign(def(),s);run=true;$('#menu').classList.remove('on');$('#menu').style.transform='scale(1.1)';toast('Welcome to Dusty Creek. Stay calm.')}
 $('#ct').onclick=()=>{const s=load();s?start(s):toast('No save found, start a New Game.')};
 $('#ng').onclick=()=>start(def());
 $('#rm').onclick=()=>{const s=load();if(s){s.mem={};s.rel={};try{localStorage.setItem('sb1',JSON.stringify(s))}catch(e){}}toast('NPC memories cleared.')};
@@ -140,4 +144,133 @@ document.addEventListener('mouseover',e=>{const b=e.target.closest('button');if(
 const setO=$('#set');$('#sbtn').onclick=async()=>{if(!window.sb)return toast('Settings work in the desktop app.');const c=await sb.getCfg();$('#sb_url').value=c.base;$('#sb_model').value=c.model;$('#sb_key').placeholder=c.hasKey?'Key saved (leave blank to keep it)':'API key (stored on this PC only)';setO.classList.add('on')};
 $('#sb_x').onclick=()=>setO.classList.remove('on');
 $('#sb_save').onclick=async()=>{await sb.setCfg({base:$('#sb_url').value,model:$('#sb_model').value,key:$('#sb_key').value});$('#sb_key').value='';setO.classList.remove('on');toast('AI settings saved.')};
+
+let UI=0,MG=null;VP.boss=[.5,.8];
+const nd=i=>{const b=B[i];return Math.abs(S.x-(b[0]+b[2]/2))<42&&S.y>b[1]+b[3]-2&&S.y<b[1]+b[3]+44};
+const BAD=/\b(drugs?|weed|meth|cocaine|heroin|dealers?|narcotics?|marijuana|stash|cartel|smuggl\w*|illegal)\b/i;
+const BOSS={id:'boss',n:'The Boss',c:'#6a2c91',p:'A smooth, impatient crime boss. Speaks briefly and politely threatens. Runs a fake blue candy business through the player. Everything stays fictional comedy; never explain how to make anything.'};
+const MS=[
+{t:'Cover Story',r:50,i:['Listen up. Your late uncle left you that workshop, and me a business arrangement.','We sell blue candy. Pure sugar. Totally legal. Nothing suspicious. Understood?','Go to the Supermarket in the southwest. Buy sugar, blue dye and a jar. Then head back to the workshop.'],o:[{d:'Go to the Supermarket (southwest corner)',ok:()=>nd(4)},{d:'Buy 1 Sugar, 1 Blue Dye and 1 Jar',ok:()=>{const v=S.inv;return v.sugar>0&&v.dye>0&&v.jar>0}},{d:'Go to your Workshop (north, press E at the door)',ok:()=>nd(1)}]},
+{t:'First Batch',r:40,i:['Good. Now cook your first batch of blue candy. Stir carefully.','At the workshop, press E, start the batch, and hit Space when the marker is in the green. Do not burn it.'],o:[{d:'Cook a batch at the Workshop (E, then Space on green)',ok:()=>S.stars>0}]},
+{t:'Special Delivery',r:30,i:['Dave down the road wants a taste of the candy. Two crystals.','And whatever you do, do not say anything weird around Officer Miller. He hears more than you think.'],o:[{d:'Have 2 crystals (cook more, buy supplies at the Supermarket)',ok:()=>S.inv.crystals>=2},{d:'Talk to Dave and press Give (2 crystals)',g:{id:'dave',n:2,p:60},ok:()=>S.gv==='dave'}]},
+{t:'Big Order',r:80,i:['Bob called. He has theories about candy. He also wants three crystals.','Make a good batch, then deliver. Try not to listen to the theories.'],o:[{d:'Have 3 crystals (cook, restock at the Supermarket)',ok:()=>S.inv.crystals>=3},{d:'Talk to Bob and press Give (3 crystals)',g:{id:'bob',n:3,p:120},ok:()=>S.gv==='bob'}]},
+{t:'Heat',r:150,s:()=>{S.pend=1},i:['Bad news. Miller heard something. He is coming for you.','Run to your apartment. Now. Do not stop for candy.'],o:[{d:'RUN to your Apartment (northwest) before Miller catches you!',ok:()=>nd(0)}]}];
+function done(){const m=MS[S.mi];S.money+=m.r;sfx('money');toast('Mission complete: '+m.t+' +$'+m.r);S.mi++;S.oi=0;S.stars=0;S.gv='';S.rg=0;S.rgt=MS[S.mi]?5:0;NP[3].ch=0;save();if(!MS[S.mi])setTimeout(()=>toast('Chapter 1 complete. More soon!'),2500)}
+function startChase(){const m=NP[3];if(m.ch)return;m.ch=1;m.ct=0;S.sus=Math.max(S.sus,70);closeUI();close();toast('Officer Miller is after you! RUN!');sfx('alarm')}
+function arrest(){const m=NP[3];m.ch=0;m.x=m.hx;m.y=m.hy;S.x=640;S.y=215;S.money=Math.max(0,S.money-80);S.inv.crystals=0;S.sus=30;sfx('alarm');closeUI();close();toast('Arrested! Fined $80 and your crystals were confiscated.');if(MS[S.mi]&&MS[S.mi].t==='Heat')setTimeout(startChase,4000)}
+function lose(){const m=NP[3];m.ch=0;m.ct=0;S.sus=Math.max(0,S.sus-25);m.tx=m.hx;m.ty=m.hy;toast('You lost Officer Miller.')}
+function bad(n){S.sus=cl(S.sus+12,0,100);const m=NP[3];if(n.id==='miller'||Math.hypot(m.x-S.x,m.y-S.y)<150){startChase();return true}toast('Someone nearby gave you a funny look...');return false}
+function tick(dt){const m=MS[S.mi],o=m&&m.o[S.oi],v=S.inv;
+if(S.rgt>0){S.rgt-=dt;if(S.rgt<=0){S.rg=1;toast('Your phone is ringing! Press the up arrow.')}}
+if(S.rg&&fr%160===0)sfx('phone');if(NP[3].ch&&fr%120===0)sfx('alarm');
+if(S.pend&&!cur){S.pend=0;startChase()}
+if(o&&!S.rg&&S.rgt<=0&&o.ok()){S.oi++;sfx('toast');if(S.oi>=m.o.length)done()}
+if(MG)updMG(dt);
+const ob=S.rg?'Boss is calling... press the up arrow':S.rgt>0?'Stay alert...':o?o.d:'Chapter 1 complete. More soon.';
+$('#ob').textContent=(NP[3].ch?'RUN! ':'')+ob;$('#ob').style.color=NP[3].ch?'var(--r)':'var(--a)';
+$('#pm').textContent=m?m.t:'Chapter 1 complete';$('#pi').textContent=ob;$('#pv').textContent='Sugar '+v.sugar+' · Dye '+v.dye+' · Jars '+v.jar+' · Crystals '+v.crystals;
+$('#pa').style.display=S.rg?'':'none';
+$('#gv').style.display=(o&&o.g&&cur&&cur.id===o.g.id&&!S.rg&&S.rgt<=0)?'':'none'}
+async function answer(){if(!S.rg)return;S.rg=0;BOSS.sc=1;open(BOSS);BOSS.sc=0;const m=MS[S.mi];busy=true;st('speaking');let ok=1;
+for(const l of m.i){if(cur!==BOSS){ok=0;break}hist.push({w:'Boss',t:l});speak(BOSS,l);sfx('recv');await typeIt(add('The Boss','','n'),l);await new Promise(r=>{const w=()=>{try{(window.speechSynthesis&&speechSynthesis.speaking&&vOn)?setTimeout(w,200):r()}catch(e){r()}};setTimeout(w,400)})}
+if(ok){busy=false;st('idle')}m.s&&m.s()}
+$('#pa').onclick=answer;$('#cb').onclick=()=>{if(S.rg)answer();else open(BOSS)};
+$('#gv').onclick=()=>{const o=MS[S.mi]&&MS[S.mi].o[S.oi];if(!o||!o.g||busy)return;if(S.inv.crystals<o.g.n)return toast('You need '+o.g.n+' crystals.');S.inv.crystals-=o.g.n;S.money+=o.g.p;S.gv=o.g.id;sfx('money');$('#in').value='*hands you '+o.g.n+' bags of blue candy and you hand over $'+o.g.p+'*';send()};
+const SH=[['sugar','Sugar',10],['dye','Blue Dye',15],['jar','Glass Jar',8]];
+function drawShop(){const e=$('#shop');e.innerHTML='<b>Dusty Creek Supermarket</b><div style="color:var(--m)">You have $'+S.money+'</div>';SH.forEach(([k,n,p])=>{const b=document.createElement('button');b.textContent=n+' · $'+p+' (you have '+S.inv[k]+')';b.onclick=()=>{if(S.money<p)return toast('Not enough money.');S.money-=p;S.inv[k]++;sfx('money');drawShop()};e.append(b)});const c=document.createElement('button');c.textContent='Leave';c.onclick=closeUI;e.append(c)}
+function openShop(){UI=1;sfx('open');$('#shop').classList.add('on');drawShop()}
+function openCraft(){UI=1;sfx('open');$('#cr').classList.add('on');$('#crt').textContent='Needs 1 Sugar, 1 Blue Dye and 1 Jar per batch.'}
+function closeUI(){if(!UI)return;UI=0;MG=null;$('#shop').classList.remove('on');$('#cr').classList.remove('on');sfx('close')}
+function updMG(dt){MG.t+=dt*MG.sp;MG.pos=(Math.sin(MG.t*3)+1)/2;$('#mgm').style.left='calc('+MG.pos*100+'% - 4px)';$('#mgz').style.left=MG.z*100+'%';$('#mgz').style.width=MG.w*100+'%'}
+function stir(){if(!MG)return;const h=MG.pos>=MG.z&&MG.pos<=MG.z+MG.w;if(h)MG.h++;sfx(h?'money':'warn');MG.r++;MG.sp+=.2;MG.z=Math.random()*(1-MG.w);
+if(MG.r>=6){const q=MG.h>=5?3:MG.h>=3?2:MG.h>=1?1:0;S.stars=q;S.inv.crystals+=q;$('#crt').textContent=q?'Batch done! '+'★'.repeat(q)+' +'+q+' crystals':'Batch ruined. Try again.';MG=null;sfx(q?'toast':'alarm')}else $('#crt').textContent='Round '+(MG.r+1)+'/6 · hits '+MG.h}
+$('#mgs').onclick=()=>{const v=S.inv;if(MG)return;if(!(v.sugar&&v.dye&&v.jar))return toast('Need 1 Sugar, 1 Blue Dye and 1 Jar.');v.sugar--;v.dye--;v.jar--;MG={r:0,h:0,t:0,sp:1.3,w:.2,z:.4,pos:0};$('#crt').textContent='Round 1/6'};
+$('#mgx').onclick=stir;$('#mgc').onclick=closeUI;
 </script></body></html>
+
+<!-- Added GTA-style features, phone UI, browser, and police heat system -->
+<div id="weapon-wheel" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; background: rgba(0,0,0,0.8); border-radius: 50%; z-index: 1000; color: white; text-align: center;">
+    <h3>Weapon Wheel</h3>
+    <ul style="list-style: none; padding: 0;">
+        <li onclick="selectWeapon('Fists')">1. Fists</li>
+        <li onclick="selectWeapon('Pistol')">2. Pistol</li>
+        <li onclick="selectWeapon('Assault Rifle')">3. Assault Rifle</li>
+    </ul>
+</div>
+
+<div id="phone-container" style="display: none; position: fixed; bottom: 20px; right: 20px; width: 280px; height: 500px; background: #111; border-radius: 25px; border: 4px solid #333; z-index: 2000; overflow: hidden; color: white;">
+    <div id="phone-screen" style="padding: 15px; height: 100%; box-sizing: border-box;">
+        <div id="phone-home">
+            <h3>MyPhone</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px;">
+                <button onclick="openApp('browser')" style="padding: 15px; background: #007acc; border: none; border-radius: 10px; color: white;">Browser</button>
+                <button onclick="openApp('contacts')" style="padding: 15px; background: #28a745; border: none; border-radius: 10px; color: white;">Contacts</button>
+            </div>
+        </div>
+        <div id="phone-app-content" style="display: none; height: 100%;">
+            <button onclick="closeApp()" style="margin-bottom: 10px;">Back</button>
+            <iframe id="browser-view" src="https://www.google.com" style="width: 100%; height: 85%; background: white; display: none; border: none;"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentWeapon = 'Fists';
+let player = { x: 100, y: 100, inVehicle: false };
+let currentVehicle = null;
+let wantedLevel = 0;
+const worldBounds = { minX: -5000, maxX: 5000, minY: -5000, maxY: 5000 };
+
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+        e.preventDefault();
+        const wheel = document.getElementById('weapon-wheel');
+        wheel.style.display = wheel.style.display === 'none' ? 'block' : 'none';
+    }
+    if (e.key === 'f' || e.key === 'F') {
+        if (!player.inVehicle) {
+            let targetVehicle = { x: 120, y: 110, distance: 20 };
+            if (targetVehicle.distance < 50) {
+                player.inVehicle = true;
+                currentVehicle = targetVehicle;
+                triggerCrime('stealing_car');
+            }
+        } else {
+            player.inVehicle = false;
+            player.x = currentVehicle.x + 30;
+            player.y = currentVehicle.y;
+            currentVehicle = null;
+        }
+    }
+    if (e.key === 'p' || e.key === 'P') {
+        const phone = document.getElementById('phone-container');
+        phone.style.display = phone.style.display === 'none' ? 'block' : 'none';
+    }
+});
+
+function selectWeapon(w) {
+    currentWeapon = w;
+    document.getElementById('weapon-wheel').style.display = 'none';
+}
+
+function triggerCrime(type) {
+    if (type === 'stealing_car') {
+        wantedLevel = Math.min(5, wantedLevel + 1);
+        console.log("Police Wanted Level:", wantedLevel);
+    }
+}
+
+function openApp(appName) {
+    document.getElementById('phone-home').style.display = 'none';
+    document.getElementById('phone-app-content').style.display = 'block';
+    if (appName === 'browser') {
+        document.getElementById('browser-view').style.display = 'block';
+    }
+}
+
+function closeApp() {
+    document.getElementById('browser-view').style.display = 'none';
+    document.getElementById('phone-app-content').style.display = 'none';
+    document.getElementById('phone-home').style.display = 'block';
+}
+</script>
