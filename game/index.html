@@ -1,0 +1,130 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Suspicious Business</title>
+<style>
+:root{color-scheme:dark;--bg:#101215;--pan:rgba(28,31,37,.88);--ln:#343944;--t:#e8eaed;--m:#9aa0a6;--a:#f2b84b;--r:#e5534b;--g:#5bc47a;--sp:cubic-bezier(.34,1.56,.64,1);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);color:var(--t);font:14px/1.4 system-ui,"Segoe UI",sans-serif;overflow:hidden}
+body{display:grid;place-items:center;background:radial-gradient(circle at 30% 20%,#1b1f27,#0c0d10)}
+#st{position:relative;width:min(100vw,calc(100vh*1.6));aspect-ratio:8/5;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px #000a}
+canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+.pan{background:var(--pan);border:1px solid var(--ln);border-radius:14px;backdrop-filter:blur(6px);box-shadow:0 8px 24px #0008}
+#hud{position:absolute;left:10px;top:10px;padding:8px 12px;display:flex;gap:14px;align-items:center;font-weight:600;transition:transform .5s var(--sp)}
+#bar{width:130px;height:10px;border-radius:9px;background:#0007;overflow:hidden;border:1px solid var(--ln)}
+#bf{height:100%;width:5%;background:var(--g);transition:width .6s var(--sp),background .4s}
+#loc{position:absolute;right:10px;top:10px;padding:8px 12px;color:var(--m)}
+#pr{position:absolute;left:50%;bottom:16px;transform:translate(-50%,40px);opacity:0;padding:8px 14px;transition:.35s var(--sp);pointer-events:none}
+#pr.on{transform:translate(-50%,0);opacity:1}
+.ov{position:absolute;display:flex;flex-direction:column;transition:transform .45s var(--sp),opacity .3s;opacity:0;pointer-events:none}
+.ov.on{opacity:1;pointer-events:auto;transform:none!important}
+#dlg{left:3%;right:3%;bottom:3%;padding:12px;transform:translateY(60px) scale(.97);max-height:62%}
+#dh{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+#av{width:34px;height:34px;border-radius:9px;border:2px solid #0006}
+#pill{margin-left:auto;font-size:12px;padding:3px 10px;border-radius:99px;background:#0006;color:var(--m);transition:.3s}
+#pill.listening{color:var(--g);animation:pu 1s infinite}#pill.thinking{color:var(--a);animation:pu .6s infinite}#pill.speaking{color:#7ab8ff}
+@keyframes pu{50%{opacity:.4}}
+#log{overflow:auto;min-height:60px;flex:1;display:flex;flex-direction:column;gap:6px;padding:4px}
+#log div{animation:in .35s var(--sp)}@keyframes in{from{opacity:0;transform:translateY(8px)}}
+.y{color:var(--m)}.n b{color:var(--a)}
+.row{display:flex;gap:6px;margin-top:8px}
+input{flex:1;background:#0006;border:1px solid var(--ln);border-radius:10px;color:var(--t);padding:9px 12px;font:inherit;outline:none}input:focus{border-color:var(--a)}
+button{background:#2a2f38;color:var(--t);border:1px solid var(--ln);border-radius:10px;padding:8px 14px;font:inherit;cursor:pointer;transition:transform .25s var(--sp),background .2s}
+button:hover{background:#363c48;transform:translateY(-2px)}button:active{transform:scale(.94)}button.p{background:var(--a);color:#1a1300;border:0;font-weight:700}
+#ph{right:3%;bottom:3%;width:230px;padding:14px;transform:translateY(120%);gap:8px}
+#ph h4{margin:0;color:var(--m);font-weight:600}
+#menu{inset:0;background:#0b0c0fd9;align-items:center;justify-content:center;gap:10px;transform:scale(1.04);z-index:5}
+#menu h1{margin:0;font-size:clamp(24px,5vw,48px);letter-spacing:3px;color:var(--a);text-shadow:0 4px 0 #6b4a00}
+#menu p{margin:0 0 14px;color:var(--m)}#menu button{width:210px}
+#tt{position:absolute;top:60px;left:50%;transform:translate(-50%,-30px);padding:8px 14px;opacity:0;transition:.4s var(--sp);z-index:6}#tt.on{transform:translate(-50%,0);opacity:1}
+</style></head><body><div id="st"><canvas id="cv" width="800" height="500"></canvas>
+<div id="hud" class="pan"><span id="mo">$100</span><span id="tm">8:00</span><span style="display:flex;gap:6px;align-items:center">Suspicion<div id="bar"><div id="bf"></div></div></span></div>
+<div id="loc" class="pan">Dusty Creek</div><div id="pr" class="pan"></div>
+<div id="dlg" class="ov pan"><div id="dh"><div id="av"></div><b id="nm"></b><span id="pill">idle</span></div><div id="log"></div><div class="row"><button id="mc" title="Microphone">Mic</button><input id="in" placeholder="Say something..." maxlength="200"><button id="sd" class="p">Send</button><button id="cl">Leave</button></div></div>
+<div id="ph" class="ov pan"><h4>PHONE</h4><b id="ps"></b><button id="cv1">Call Vinny (friend in crime)</button><button id="ph2">Close</button></div>
+<div id="menu" class="ov on"><h1>SUSPICIOUS BUSINESS</h1><p>Dusty Creek needs a business. Nobody should ask questions.</p><button id="ct" class="p">Continue</button><button id="ng">New Game</button><button id="rm">Reset NPC memories</button><button id="sbtn">Settings</button><p style="margin-top:10px;font-size:12px">WASD move · E talk · ↑ phone · Esc close</p></div>
+<div id="set" class="ov pan" style="left:18%;right:18%;top:18%;padding:16px;gap:8px;transform:scale(.9);z-index:7"><b>AI Settings</b><input id="sb_url" placeholder="API base URL"><input id="sb_model" placeholder="Model ID"><input id="sb_key" type="password" placeholder="API key (stored on this PC only)"><div class="row"><button id="sb_save" class="p">Save</button><button id="sb_x">Close</button></div></div><div id="tt" class="pan"></div></div>
+<script>
+const $=s=>document.querySelector(s),cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const g=$('#cv').getContext('2d');g.imageSmoothingEnabled=false;
+const B=[[40,40,150,100,'#7a4e3a','Apartment'],[230,40,150,100,'#4a5d73','Workshop'],[420,40,150,100,'#8a6a2f','Hardware Store'],[610,40,150,100,'#3b5f8a','Police Office'],[40,340,170,110,'#6b4a6e','Convenience Store'],[600,340,160,110,'#4f7a5a','Restaurant']];
+const NP=[
+{id:'dave',n:'Dave',c:'#c98b5a',hx:300,hy:170,p:'Middle-aged American man. Tired, sarcastic, nosy, awkward small talk. Gets annoyed if the player acts strangely.'},
+{id:'bob',n:'Bob',c:'#8d8d8d',hx:400,hy:300,p:'Older raspy man. Slow, weird, overconfident. Shares bizarre theories and pointless observations.'},
+{id:'mike',n:'Mike',c:'#4b5563',hx:495,hy:170,p:'Hardware store owner. Calm, serious, dry humor, distrusts strange customers, gives sarcastic advice.'},
+{id:'miller',n:'Officer Miller',c:'#2f4f8f',hx:685,hy:170,p:'Police officer. Professional, slightly sarcastic, very observant, reacts to suspicious behavior.'}];
+const VIN={id:'vinny',n:'Vinny',c:'#a33',p:'The player’s old friend and partner in crime, on the phone. Loud, loyal, scheming, jokes a lot. Can offer a harmless comedy side job (return true in "job") but only occasionally.'};
+NP.forEach(n=>{n.x=n.hx;n.y=n.hy;n.tx=n.hx;n.ty=n.hy;n.f=1});
+const def=()=>({money:100,sus:5,min:480,mem:{},rel:{},x:115,y:170});
+let S=null,keys={},cur=null,hist=[],busy=false,ac=null,sample=null,last=0,jobT=-99,run=false,tw=null;
+if(window.sb)sample=async(p,o)=>({text:await sb.ask(p)});
+const load=()=>{try{return JSON.parse(localStorage.getItem('sb1'))}catch(e){return null}};
+const save=()=>{try{localStorage.setItem('sb1',JSON.stringify(S))}catch(e){}};
+function toast(t){const e=$('#tt');e.textContent=t;e.classList.add('on');clearTimeout(e.h);e.h=setTimeout(()=>e.classList.remove('on'),2600)}
+const hit=(x,y)=>x<8||y<8||x>792||y>492||B.some(b=>x+5>b[0]&&x-5<b[0]+b[2]&&y+6>b[1]&&y-2<b[1]+b[3]);
+// world
+const bgc=document.createElement('canvas');bgc.width=800;bgc.height=500;
+(function(){const c=bgc.getContext('2d');c.fillStyle='#2f4a35';c.fillRect(0,0,800,500);let s=7;const r=()=>(s=s*16807%2147483647)/2147483647;
+for(let i=0;i<900;i++){c.fillStyle=r()<.5?'#38573d':'#2a4230';c.fillRect(r()*800|0,r()*500|0,3,3)}
+c.fillStyle='#3a3d44';c.fillRect(0,185,800,60);c.fillRect(380,140,40,320);c.fillStyle='#d9c36a';for(let x=0;x<800;x+=40)c.fillRect(x,213,22,3);
+B.forEach(b=>{c.fillStyle='#0004';c.fillRect(b[0]+6,b[1]+b[3],b[2],8);c.fillStyle=b[4];c.fillRect(b[0],b[1],b[2],b[3]);c.fillStyle='#0003';c.fillRect(b[0],b[1],b[2],20);c.fillStyle='#fff2';for(let i=0;i<3;i++)c.fillRect(b[0]+14+i*44,b[1]+36,24,22);c.fillStyle='#2b1d14';c.fillRect(b[0]+b[2]/2-9,b[1]+b[3]-30,18,30)});
+c.fillStyle='#5a3f26';c.fillRect(370,310,60,10)})();
+function person(x,y,c,f,st,hair){g.fillStyle='#0005';g.fillRect(x-6,y+6,12,4);const w=st?Math.sin(st*.35)*2:0;g.fillStyle='#222';g.fillRect(x-4,y+2,3,5+w);g.fillRect(x+1,y+2,3,5-w);g.fillStyle=c;g.fillRect(x-5,y-6,10,9);g.fillStyle='#e0b48f';g.fillRect(x-4,y-13,8,7);g.fillStyle=hair||'#3a2a1a';g.fillRect(x-4,y-14,8,3);g.fillStyle='#000';g.fillRect(x+(f>0?1:-3),y-10,2,2)}
+let fr=0;
+function frame(t){requestAnimationFrame(frame);const dt=Math.min(.05,(t-last)/1000||0);last=t;if(!S)return;fr++;
+let mv=0;if(run&&!cur){let dx=(keys.d?1:0)-(keys.a?1:0),dy=(keys.s?1:0)-(keys.w?1:0);if(dx||dy){const l=Math.hypot(dx,dy),sp=95*dt;const nx=S.x+dx/l*sp,ny=S.y+dy/l*sp;if(!hit(nx,S.y))S.x=nx;if(!hit(S.x,ny))S.y=ny;mv=fr;if(dx)S.f=dx}}
+if(run)S.min+=dt*2;
+NP.forEach(n=>{if(cur&&cur.id===n.id){n.f=S.x>n.x?1:-1;return}if(Math.random()<.004){n.tx=n.hx+(Math.random()-.5)*60;n.ty=n.hy+(Math.random()-.5)*30}const d=Math.hypot(n.tx-n.x,n.ty-n.y);n.m=0;if(d>2){const nx=n.x+(n.tx-n.x)/d*28*dt,ny=n.y+(n.ty-n.y)/d*28*dt;if(!hit(nx,ny)){n.x=nx;n.y=ny;n.m=fr}n.f=n.tx>n.x?1:-1}});
+const near=NP.filter(n=>Math.hypot(n.x-S.x,n.y-S.y)<42).sort((a,b)=>Math.hypot(a.x-S.x,a.y-S.y)-Math.hypot(b.x-S.x,b.y-S.y))[0];
+const mil=NP[3],dm=Math.hypot(mil.x-S.x,mil.y-S.y);
+if(run){S.sus=cl(S.sus+(dm<90&&S.sus>35?.9:-.25)*dt,0,100);if(S.sus>=100){S.sus=40;S.money=Math.max(0,S.money-50);toast('Busted! Miller fined you $50.')}}
+g.drawImage(bgc,0,0);
+const ent=[{y:S.y,d:()=>person(S.x,S.y,'#d9a441',S.f||1,mv,'#222')},...NP.map(n=>({y:n.y,d:()=>{person(n.x,n.y,n.c,n.f,n.m);g.fillStyle='#fffc';g.font='9px monospace';g.textAlign='center';g.fillText(n.n,n.x,n.y-18)}}))].sort((a,b)=>a.y-b.y);ent.forEach(e=>e.d());
+const h=S.min/60%24;const nt=h>=19||h<6?.45:h>=17?.2:0;if(nt){g.fillStyle=`rgba(10,15,45,${nt})`;g.fillRect(0,0,800,500)}
+const lamp=B.map(b=>[b[0]+b[2]/2,b[1]+b[3]]);if(nt)lamp.forEach(l=>{g.fillStyle='rgba(255,220,120,.12)';g.beginPath();g.arc(l[0],l[1],34+Math.sin(fr/20)*2,0,7);g.fill()});
+const p=$('#pr');if(near&&!cur){p.textContent='E · Talk to '+near.n;p.classList.add('on');S.near=near}else{p.classList.remove('on');S.near=null}
+$('#mo').textContent='$'+S.money;$('#tm').textContent=(h|0)+':'+String(S.min%60|0).padStart(2,'0');
+$('#bf').style.width=S.sus+'%';$('#bf').style.background=S.sus>70?'var(--r)':S.sus>40?'var(--a)':'var(--g)';
+const lb=B.find(b=>Math.abs(S.x-(b[0]+b[2]/2))<b[2]/2+25&&S.y>b[1]&&S.y<b[1]+b[3]+60);$('#loc').textContent=lb?lb[5]:'Dusty Creek';$('#ps').textContent='$'+S.money+' · Suspicion '+(S.sus|0)+'%'}
+requestAnimationFrame(frame);
+// dialogue
+const st=s=>{const p=$('#pill');p.className=s;p.textContent=s==='idle'?'ready':s}
+function add(w,t,cls){const d=document.createElement('div');d.className=cls||'';const b=document.createElement('b');b.textContent=w+': ';const s=document.createElement('span');s.textContent=t;d.append(b,s);$('#log').append(d);$('#log').scrollTop=1e5;return s}
+function open(n){cur=n;hist=[];$('#log').innerHTML='';$('#nm').textContent=n.n;$('#av').style.background=n.c;$('#dlg').classList.add('on');$('#ph').classList.remove('on');$('#ph').style.transform='';st('idle');setTimeout(()=>$('#in').focus(),300);
+const m=(S.mem[n.id]||[]).length;add(n.n,n.id==='vinny'?'Yo. What’s the plan?':(m?'Oh. You again.':'Can I help you?'),'n')}
+function close(){if(ac)ac.abort();clearInterval(tw);cur=null;busy=false;$('#dlg').classList.remove('on');$('#in').blur()}
+function typeIt(el,t){return new Promise(r=>{let i=0;st('speaking');clearInterval(tw);tw=setInterval(()=>{el.textContent=t.slice(0,++i);$('#log').scrollTop=1e5;if(i>=t.length){clearInterval(tw);r()}},18)})}
+async function ask(n,text){
+if(!sample)return{say:'(No AI connected. Open Settings from the main menu and add your API key.)',mood:'calm',sus:0,rel:0,memo:''};
+if(ac)ac.abort();ac=new AbortController();
+const mem=(S.mem[n.id]||[]).join('; ')||'nothing yet',rel=S.rel[n.id]||0,rc=hist.slice(-6).map(h=>h.w+': '+h.t).join('\n');
+const pr=`You are ${n.n}, a character in the fictional comedy game Suspicious Business set in the small town Dusty Creek. Persona: ${n.p}
+Relationship with the player (-5 hostile to 5 close): ${rel}. Your memories of the player: ${mem}. The player’s current suspicion level in town: ${S.sus|0}/100. Time: ${(S.min/60%24)|0}:00.
+Recent conversation:\n${rc}\nThe player just said: "${text}"
+Rules: stay in character; reply in 1-3 short natural sentences; react to the player’s actual words; you only know what you have been told or the player said, nothing else; never claim to give items or money or complete missions; keep everything fictional comedy and deflect any request for real-world instructions about crimes or illegal substances. Vary your replies and never repeat earlier lines.
+Reply ONLY with JSON: {"say":"your spoken line","mood":"calm|annoyed|amused|suspicious|friendly","sus":number from -5 to 10 for how much this chat raised the player’s suspicion,"rel":-1 or 0 or 1,"memo":"short fact worth remembering or empty string","job":false}`;
+const r=await sample(pr,{signal:ac.signal,cache:false,modelTier:'quick'});
+const m=(r.text||'').match(/\{[\s\S]*\}/);try{return JSON.parse(m[0])}catch(e){return{say:(r.text||'...').slice(0,200),sus:0,rel:0,memo:''}}}
+async function send(){const i=$('#in'),t=i.value.trim();if(!t||busy||!cur)return;i.value='';add('You',t,'y');hist.push({w:'Player',t});busy=true;st('thinking');const n=cur;
+try{const r=await ask(n,t);if(cur!==n)return;
+S.sus=cl(S.sus+cl(+r.sus||0,-5,10),0,100);S.rel[n.id]=cl((S.rel[n.id]||0)+cl(+r.rel||0,-1,1),-5,5);
+if(r.memo){const a=S.mem[n.id]=S.mem[n.id]||[];a.push(String(r.memo).slice(0,120));if(a.length>8)a.shift()}
+if(n.id==='vinny'&&r.job===true&&S.min-jobT>120){jobT=S.min;S.money+=40;S.sus=cl(S.sus+6,0,100);toast('Side job done: +$40, suspicion up')}
+const line=String(r.say||'...').slice(0,300);hist.push({w:n.n,t:line});await typeIt(add(n.n,'','n'),line);save()}
+catch(e){if(e&&e.name!=='AbortError'&&cur===n){add(n.n,String(e.message).includes('NOKEY')?'(No API key yet. Open Settings from the menu.)':'(Connection failed. Check your key and model in Settings.)','n')}}
+busy=false;if(cur)st('idle')}
+$('#sd').onclick=send;$('#in').onkeydown=e=>{if(e.key==='Enter')send();e.stopPropagation()};$('#cl').onclick=close;
+$('#mc').onclick=()=>{const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return toast('Mic not supported here, type instead.');const r=new R();r.lang='en-US';st('listening');r.onresult=e=>{$('#in').value=e.results[0][0].transcript;send()};r.onerror=()=>{st('idle');toast('Mic blocked, type instead.')};r.onend=()=>{if(!busy)st('idle')};try{r.start()}catch(e){st('idle')}};
+// phone + keys
+const phone=()=>{if(cur||!run)return;const p=$('#ph');p.classList.toggle('on');p.style.transform=''};
+$('#cv1').onclick=()=>open(VIN);$('#ph2').onclick=()=>$('#ph').classList.remove('on');
+onkeydown=e=>{if(document.activeElement.tagName==='INPUT')return;const k=e.key.toLowerCase();if(k==='arrowup'){e.preventDefault();phone();return}
+if(k==='escape'){close();$('#ph').classList.remove('on');return}
+if(k==='e'&&run&&!cur&&S.near)open(S.near);if('wasd'.includes(k)&&k.length===1)keys[k]=1};
+onkeyup=e=>{delete keys[e.key.toLowerCase()]};
+// menu
+function start(s){S=s;run=true;$('#menu').classList.remove('on');$('#menu').style.transform='scale(1.1)';toast('Welcome to Dusty Creek. Stay calm.')}
+$('#ct').onclick=()=>{const s=load();s?start(s):toast('No save found, start a New Game.')};
+$('#ng').onclick=()=>start(def());
+$('#rm').onclick=()=>{const s=load();if(s){s.mem={};s.rel={};try{localStorage.setItem('sb1',JSON.stringify(s))}catch(e){}}toast('NPC memories cleared.')};
+setInterval(()=>{if(run)save()},5000);
+const setO=$('#set');$('#sbtn').onclick=async()=>{if(!window.sb)return toast('Settings work in the desktop app.');const c=await sb.getCfg();$('#sb_url').value=c.base;$('#sb_model').value=c.model;$('#sb_key').placeholder=c.hasKey?'Key saved (leave blank to keep it)':'API key (stored on this PC only)';setO.classList.add('on')};
+$('#sb_x').onclick=()=>setO.classList.remove('on');
+$('#sb_save').onclick=async()=>{await sb.setCfg({base:$('#sb_url').value,model:$('#sb_model').value,key:$('#sb_key').value});$('#sb_key').value='';setO.classList.remove('on');toast('AI settings saved.')};
+</script></body></html>

@@ -1,0 +1,12 @@
+const {app,BrowserWindow,ipcMain,Menu}=require('electron');const path=require('path'),fs=require('fs');
+const cf=()=>path.join(app.getPath('userData'),'ai.json');
+const def={base:'https://generativelanguage.googleapis.com/v1beta/openai',model:'gemini-2.5-flash',key:''};
+const rd=()=>{try{return{...def,...JSON.parse(fs.readFileSync(cf(),'utf8'))}}catch(e){return{...def}}};
+ipcMain.handle('cfg:get',()=>{const c=rd();return{base:c.base,model:c.model,hasKey:!!c.key}});
+ipcMain.handle('cfg:set',(e,v)=>{const c=rd();const n={base:String(v.base||c.base).replace(/\/+$/,''),model:String(v.model||c.model),key:v.key?String(v.key).trim():c.key};fs.writeFileSync(cf(),JSON.stringify(n));return true});
+ipcMain.handle('ai',async(e,prompt)=>{const c=rd();if(!c.key)throw new Error('NOKEY');const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),20000);
+try{const r=await fetch(c.base+'/chat/completions',{method:'POST',signal:ctl.signal,headers:{'Content-Type':'application/json',Authorization:'Bearer '+c.key},body:JSON.stringify({model:c.model,messages:[{role:'user',content:String(prompt).slice(0,8000)}]})});
+if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();return j.choices[0].message.content}finally{clearTimeout(t)}});
+app.whenReady().then(()=>{Menu.setApplicationMenu(null);const w=new BrowserWindow({width:1280,height:800,backgroundColor:'#101215',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,nodeIntegration:false}});w.loadFile('game/index.html');
+w.webContents.on('before-input-event',(e,i)=>{if(i.type==='keyDown'&&i.key==='F11')w.setFullScreen(!w.isFullScreen())})});
+app.on('window-all-closed',()=>app.quit());
