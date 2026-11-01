@@ -1,0 +1,4 @@
+{"name":"suspicious-business","version":"0.1.0","description":"Suspicious Business - AI NPC comedy game","main":"main.js","author":"you","license":"UNLICENSED",
+"scripts":{"start":"electron .","dist":"electron-builder --win portable nsis --publish never"},
+"devDependencies":{"electron":"^33.0.0","electron-builder":"^25.0.0"},
+"build":{"appId":"com.suspicious.business","productName":"Suspicious Business","files":["main.js","preload.js","game/**"],"win":{"target":["nsis","portable"]}}}
